@@ -10,6 +10,7 @@ Manage target tags in hawkbit, including adding targets to them.
 Subcommands, if <command> is omitted list will be used.
 
     list                            List all tags
+    assigned <ID>                   Show targets assigned to tag ID
     create <NAME> <DESCRIPTION>     Crete a new tag
     delete <ID>                     Delete the tag with ID <ID>
     add <ID> <TARGET>...            Add TARGETs to tag ID
@@ -31,7 +32,7 @@ elif [[ "$1" == "delete" ]]; then
     set -u
 
     ./delete "/targettags/$2"
-elif [[ "$1" == "list" ]] && [[ -n "$2" ]]; then
+elif [[ "$1" == "assigned" ]] && [[ -n "$2" ]]; then
     set -u
 
     ./get "/targettags/$2/assigned" | jq .
