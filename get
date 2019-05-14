@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+. config.sh
+
+curl -s -u "admin:$PASSWORD" "$API_URL""$1"

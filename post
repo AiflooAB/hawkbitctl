@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+. config.sh
+
+set -u
+
+data=$(cat /dev/stdin)
+
+curl -s -u "admin:$PASSWORD" \
+    "$API_URL""$1" \
+    -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d "$data"
