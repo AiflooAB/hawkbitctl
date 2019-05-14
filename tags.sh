@@ -2,7 +2,7 @@
 
 show_help() {
 cat << EOF
-Usage: ${0##*/} [<command>]
+Usage: hawkbitctl tags [<command>]
 Manage target tags in hawkbit, including adding targets to them.
 
     -h, --help  display this help and exit

@@ -2,7 +2,7 @@
 
 show_help() {
 cat << EOF
-Usage: ${0##*/} [<command>]
+Usage: hawkbitctl targets [<command>]
 Manage targets in hawkbit.
 
 Note that tag assignment happens with ./tags.sh
