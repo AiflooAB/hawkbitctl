@@ -1,6 +1,25 @@
 #!/bin/bash
 
-if [[ "$1" == "create" ]]; then
+show_help() {
+cat << EOF
+Usage: ${0##*/} [<command>]
+Manage target tags in hawkbit, including adding targets to them.
+
+    -h, --help  display this help and exit
+
+Subcommands, if <command> is omitted list will be used.
+
+    list                            List all tags
+    create <NAME> <DESCRIPTION>     Crete a new tag
+    delete <ID>                     Delete the tag with ID <ID>
+    add <ID> <TARGET>...            Add TARGETs to tag ID
+EOF
+}
+
+if [[ "$1" =~ -h|--help ]]; then
+    show_help
+    exit 0
+elif [[ "$1" == "create" ]]; then
     set -u
 
     jq --null-input \
@@ -29,6 +48,8 @@ elif [[ "$1" == "add" ]] && [[ -n "$2" ]] && [[ -n "$3" ]]; then
 
     echo "$quoted" | jq 'map({ controllerId: . })' \
         | ./post "/targettags/$2/assigned" | jq .
+elif [[ "$1" == "list" ]]; then
+    ./get /targettags | jq .
 else
     ./get /targettags | jq .
 fi
