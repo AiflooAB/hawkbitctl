@@ -15,15 +15,17 @@ hawkbitctl <command> --help
 EOF
 }
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
+
 if [[ "$1" =~ -h|--help ]]; then
     show_help
     exit 0
 elif [[ "$1" == "tags" ]]; then
     shift
-    ./tags.sh "$@"
+    cd "$DIR/src" && ./tags.sh "$@"
 elif [[ "$1" == "targets" ]]; then
     shift
-    ./targets.sh "$@"
+    cd "$DIR/src" && ./targets.sh "$@"
 elif [[ -n "$2" ]]; then
     echo >&2 "Unknown command $2"
     show_help
