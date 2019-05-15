@@ -49,10 +49,6 @@ elif [[ "$1" == "deploygroup-targets" ]]; then
         jq --raw-output '.content | map([ .name, .updateStatus ])[] | @tsv'
     }
 
-    header() {
-        printf "Name\\tStatus\\n---\\t---\\n"
-    }
-
     if [[ "$3" =~ -a|--all ]]; then
         groups=$(./get "/rollouts/$2/deploygroups" | jq --raw-output .content[].id)
     else
@@ -60,7 +56,7 @@ elif [[ "$1" == "deploygroup-targets" ]]; then
     fi
 
     (
-        header &&
+        printf "Name\\tStatus\\n---\\t---\\n" &&
         for group in $groups; do
             echo "# group $group"
             get_group "$2" "$group"
