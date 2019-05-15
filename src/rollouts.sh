@@ -13,7 +13,7 @@ Subcommands, if <command> is omitted list will be used.
     list                                            List all rollouts
     show <ROLLOUT>                                  Show details about a specific rollout
     deploygroups <ROLLOUT>                          List all deploygroups for a rollout
-    deploygroup-targets <ROLLOUT> <DEPLOYGROUP>     Show all targets for a deploygroup
+    deploygroup-targets <ROLLOUT> <DEPLOYGROUP>...  Show all targets for a deploygroup
 EOF
 }
 
@@ -55,19 +55,17 @@ elif [[ "$1" == "deploygroup-targets" ]]; then
 
     if [[ "$3" =~ -a|--all ]]; then
         groups=$(./get "/rollouts/$2/deploygroups" | jq --raw-output .content[].id)
-        (
-            header &&
-            for group in $groups; do
-                echo "# group $group"
-                get_group "$2" "$group"
-            done
-        ) | column -s '	' -t
     else
-        (
-            header &&
-            get_group "$2" "$3"
-        ) | column -s '	' -t
+        groups="${*:3}"
     fi
+
+    (
+        header &&
+        for group in $groups; do
+            echo "# group $group"
+            get_group "$2" "$group"
+        done
+    ) | column -s '	' -t
 elif [[ "$1" == "list" ]]; then
     ./get /rollouts | jq .
 else
