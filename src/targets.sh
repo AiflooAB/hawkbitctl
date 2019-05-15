@@ -27,8 +27,9 @@ elif [[ "$1" == "show" ]]; then
     ./get "/targets/$2" | jq .
 elif [[ "$1" == "actions" ]]; then
     latest_action=$(./get "/targets/$2/actions" | jq .content[0].id)
-    # ./get "/targets/$2/actions/$latest_action/status" | jq --raw-output '.content | map(.type + "\t@\t" + (.reportedAt | tostring) + "\t" + (.messages | join(" | ")))[]'
-    ./get "/targets/$2/actions/$latest_action/status" | jq --raw-output '.content | map([ .type, (.reportedAt/1000 | todate), (.messages | join(" | "))])[] | @tsv' | column -s '	' -t
+    ./get "/targets/$2/actions/$latest_action/status" | \
+        jq --raw-output '.content | map([ .type, (.reportedAt/1000 | todate), (.messages | join(" | "))])[] | @tsv' | \
+        column -s '	' -t
 elif [[ "$1" == "list" ]]; then
     ./get /targets | jq .
 else
