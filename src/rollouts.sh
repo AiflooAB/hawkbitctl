@@ -2,10 +2,11 @@
 
 show_help() {
 cat << EOF
-Usage: hawkbitctl rollouts [<command>]
+Usage: hawkbitctl rollouts [<command>] [OPTION]...
 Manage rollouts in hawkbit.
 
     -h, --help  display this help and exit
+    -a, --all   Display all deploy groups with deploygroup-targets
 
 Subcommands, if <command> is omitted list will be used.
 
@@ -42,11 +43,31 @@ elif [[ "$1" == "deploygroup-targets" ]]; then
         echo >&2 "Rollout ID or deploygroup ID missing"
         exit 1
     fi
-    (
-        printf "Name\\tStatus\\n---\\t---\\n" && 
-        ./get "/rollouts/$2/deploygroups/$3/targets" | \
+
+    get_group() {
+        ./get "/rollouts/$1/deploygroups/$2/targets" | \
         jq --raw-output '.content | map([ .name, .updateStatus ])[] | @tsv'
-    )| column -s '	' -t
+    }
+
+    header() {
+        printf "Name\\tStatus\\n---\\t---\\n"
+    }
+
+    if [[ "$3" =~ -a|--all ]]; then
+        groups=$(./get "/rollouts/$2/deploygroups" | jq --raw-output .content[].id)
+        (
+            header &&
+            for group in $groups; do
+                echo "# group $group"
+                get_group "$2" "$group"
+            done
+        ) | column -s '	' -t
+    else
+        (
+            header &&
+            get_group "$2" "$3"
+        ) | column -s '	' -t
+    fi
 elif [[ "$1" == "list" ]]; then
     ./get /rollouts | jq .
 else
