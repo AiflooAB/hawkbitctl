@@ -8,6 +8,7 @@ Manage targets in hawkbit.
 Note that tag assignment happens with ./tags.sh
 
     -h, --help  display this help and exit
+    --filter    Filter the output (only supported by list)
 
 Subcommands, if <command> is omitted list will be used.
 
@@ -50,7 +51,10 @@ elif [[ "$1" == "delete" ]]; then
     fi
     ./delete "/targets/$2"
 elif [[ "$1" == "list" ]]; then
-    ./get /targets | jq .
+    if [[ "$2" == "--filter" ]]; then
+        query="?q=$3"
+    fi
+    ./get "/targets${query:-}" | jq .
 else
     ./get /targets | jq .
 fi

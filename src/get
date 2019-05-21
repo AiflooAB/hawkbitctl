@@ -12,7 +12,7 @@ get_page() {
     page="$2"
 
     offset=$(( 50 * page ))
-    resp=$(get "$url?limit=50&offset=$offset")
+    resp=$(get "$(add_query "$url" "limit=50&offset=$offset")")
     total="$(jq .total <<< "$resp")"
     size="$(jq .size <<< "$resp")"
     jq . <<< "$resp"
@@ -23,6 +23,16 @@ get_page() {
 
     if [ $(( offset + size )) -lt "$total" ]; then
         get_page "$url" $(( page + 1 ))
+    fi
+}
+
+add_query() {
+    url="$1"
+    query="$2"
+    if [[ "$url" == *"?"* ]]; then
+        echo "$url&$query"
+    else
+        echo "$url?$query"
     fi
 }
 
