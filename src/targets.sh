@@ -39,7 +39,9 @@ elif [[ "$1" == "attributes" ]]; then
         echo >&2 "<ID> missing for attributes"
         exit 1
     fi
-    ./get "/targets/$2/attributes" | jq .
+    ./get "/targets/$2/attributes" | \
+        jq --raw-output '. | to_entries[] | [ .key, .value ] | @tsv' | \
+        column -s '	' -t
 elif [[ "$1" == "list" ]]; then
     ./get /targets | jq .
 else
