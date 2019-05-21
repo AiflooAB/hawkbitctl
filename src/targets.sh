@@ -9,6 +9,9 @@ Note that tag assignment happens with ./tags.sh
 
     -h, --help  display this help and exit
     --filter    Filter the output (only supported by list)
+                More information:
+                https://www.eclipse.org/hawkbit/ui/#how-to-filter
+                Example: attribute.mac_address==de:ad:*
 
 Subcommands, if <command> is omitted list will be used.
 
