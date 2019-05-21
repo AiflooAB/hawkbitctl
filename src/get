@@ -4,7 +4,7 @@
 . config.sh
 
 get() {
-    curl -s -u "admin:$PASSWORD" "$API_URL""$1"
+    curl -s "${CURL_AUTH_ARGS[@]}" "$API_URL""$1"
 }
 
 get_page() {

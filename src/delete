@@ -3,4 +3,4 @@
 # shellcheck disable=SC1091
 . config.sh
 
-curl -s -u "admin:$PASSWORD" "$API_URL""$1" -X DELETE
+curl -s "${CURL_AUTH_ARGS[@]}"  "$API_URL""$1" -X DELETE
