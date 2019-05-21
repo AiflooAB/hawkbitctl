@@ -3,4 +3,27 @@
 # shellcheck disable=SC1091
 . config.sh
 
-curl -s -u "admin:$PASSWORD" "$API_URL""$1"
+get() {
+    curl -s -u "admin:$PASSWORD" "$API_URL""$1"
+}
+
+get_page() {
+    url="$1"
+    page="$2"
+
+    offset=$(( 50 * page ))
+    resp=$(get "$url?limit=50&offset=$offset")
+    total="$(jq .total <<< "$resp")"
+    size="$(jq .size <<< "$resp")"
+    jq . <<< "$resp"
+
+    if [ -z "$total" ] || [ -z "$size" ] || [[ "$total" == "null" ]] || [[ "$size" == "null" ]]; then
+        return
+    fi
+
+    if [ $(( offset + size )) -lt "$total" ]; then
+        get_page "$url" $(( page + 1 ))
+    fi
+}
+
+get_page "$1" 0

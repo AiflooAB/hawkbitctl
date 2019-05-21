@@ -34,22 +34,8 @@ elif [[ "$1" == "delete" ]]; then
     ./delete "/targettags/$2"
 elif [[ "$1" == "assigned" ]] && [[ -n "$2" ]]; then
     set -u
-    tag_id="$2"
 
-    get_page() {
-        offset=$(( 50 * $1 ))
-        resp=$(./get "/targettags/$tag_id/assigned?limit=50&offset=$offset")
-        total="$(jq .total <<< "$resp")"
-        size="$(jq .size <<< "$resp")"
-        jq . <<< "$resp"
-
-        if [ $(( offset + size )) -lt "$total" ]; then
-            get_page $(( $1 + 1 ))
-        fi
-    }
-
-    get_page 0
-
+    ./get "/targettags/$2/assigned" 0
 elif [[ "$1" == "add" ]] && [[ -n "$2" ]] && [[ -n "$3" ]]; then
     ids=("${@:3}")
 
