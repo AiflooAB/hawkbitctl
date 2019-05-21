@@ -28,6 +28,9 @@ elif [[ "$1" == "show" ]]; then
     ./get "/targets/$2" | jq .
 elif [[ "$1" == "actions" ]]; then
     latest_action=$(./get "/targets/$2/actions" | jq .content[0].id)
+    if [[ "$latest_action" == "null" ]]; then
+        exit 0
+    fi
     ./get "/targets/$2/actions/$latest_action/status" | \
         jq --raw-output '.content | map([ .type, (.reportedAt/1000 | todate), (.messages | join(" | "))])[] | @tsv' | \
         column -s '	' -t
