@@ -11,8 +11,9 @@ Note that tag assignment happens with ./tags.sh
 
 Subcommands, if <command> is omitted list will be used.
 
-    list        List all tags
-    show <ID>   Show details about target ID
+    list                List all tags
+    show <ID>           Show details about target ID
+    attributes <ID>     Show all attributes for target ID
 EOF
 }
 
@@ -30,6 +31,12 @@ elif [[ "$1" == "actions" ]]; then
     ./get "/targets/$2/actions/$latest_action/status" | \
         jq --raw-output '.content | map([ .type, (.reportedAt/1000 | todate), (.messages | join(" | "))])[] | @tsv' | \
         column -s '	' -t
+elif [[ "$1" == "attributes" ]]; then
+    if [[ -z $2 ]]; then
+        echo >&2 "<ID> missing for attributes"
+        exit 1
+    fi
+    ./get "/targets/$2/attributes" | jq .
 elif [[ "$1" == "list" ]]; then
     ./get /targets | jq .
 else
