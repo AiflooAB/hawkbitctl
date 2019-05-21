@@ -14,6 +14,7 @@ Subcommands, if <command> is omitted list will be used.
     list                List all tags
     show <ID>           Show details about target ID
     attributes <ID>     Show all attributes for target ID
+    delete <ID>         Delete target ID
 EOF
 }
 
@@ -42,6 +43,12 @@ elif [[ "$1" == "attributes" ]]; then
     ./get "/targets/$2/attributes" | \
         jq --raw-output '. | to_entries[] | [ .key, .value ] | @tsv' | \
         column -s '	' -t
+elif [[ "$1" == "delete" ]]; then
+    if [[ -z $2 ]]; then
+        echo >&2 "<ID> missing for attributes"
+        exit 1
+    fi
+    ./delete "/targets/$2"
 elif [[ "$1" == "list" ]]; then
     ./get /targets | jq .
 else
