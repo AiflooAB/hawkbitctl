@@ -12,6 +12,7 @@ Subcommands, if <command> is omitted list will be used.
 
     list                                            List all rollouts
     show <ROLLOUT>                                  Show details about a specific rollout
+    delete <ROLLOUT>                                Delete a rollout
     deploygroups <ROLLOUT>                          List all deploygroups for a rollout
     deploygroup-targets <ROLLOUT> <DEPLOYGROUP>...  Show all targets for a deploygroup
 EOF
@@ -62,6 +63,13 @@ elif [[ "$1" == "deploygroup-targets" ]]; then
             get_group "$2" "$group"
         done
     ) | column -s '	' -t
+elif [[ "$1" == "delete" ]]; then
+    if [[ -z $2 ]]; then
+        echo >&2 "<ID> missing for rollouts delete"
+        exit 1
+    fi
+
+    ./delete "/rollouts/$2" | jq .
 elif [[ "$1" == "list" ]]; then
     ./get /rollouts | jq .
 else
