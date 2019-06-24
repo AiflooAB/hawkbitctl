@@ -30,4 +30,5 @@ hawkbitctl <command> --help
 
     tags        Manage target tags
     targets     Manage targets
+    rollouts    Manage rollouts
 ```
