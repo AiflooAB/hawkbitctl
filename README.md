@@ -2,6 +2,8 @@
 
 ## Setup
 
+### Environment
+
 Specify the admin password by running the following two commands
 
 ```bash
@@ -16,6 +18,15 @@ export API_HOST=https://hawkbit.example.com
 ```
 
 Remember that you will have to reenter your password whenever you switch `API_HOST`
+
+### netrc
+
+You can also configure your credentials with the help of `~/.netrc` (see
+`curl(1) --netrc` for more information)
+
+`~/.netrc` might look like this:
+
+    machine hawkbit.example.com login admin password hunter2
 
 ## Usage
 
