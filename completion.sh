@@ -17,4 +17,4 @@ _hawkbit_completion() {
     fi
 }
 
-complete -F _hawkbit_completion ./hawkbitctl
+complete -F _hawkbit_completion hawkbitctl

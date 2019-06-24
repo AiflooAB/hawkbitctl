@@ -1,0 +1,5 @@
+Package: hawkbitctl
+Architecture: all
+Maintainer: linus <linus@noomi.com>
+Depends: bash (>= 4.0), curl, jq, bsdmainutils
+Description: A command line interface towards hawkBit

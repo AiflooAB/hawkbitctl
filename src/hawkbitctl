@@ -1,0 +1,40 @@
+#!/bin/bash
+
+show_help() {
+cat << EOF
+Usage: ${0##*/} [<command>] [<args>]
+A simple CLI for managing hawkbit
+
+    -h, --help  display this help and exit
+
+Subcommands, for more information for any subcommand use:
+hawkbitctl <command> --help
+
+    tags        Manage target tags
+    targets     Manage targets
+    rollouts    Manage rollouts
+EOF
+}
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
+
+if [[ "$1" =~ -h|--help ]]; then
+    show_help
+    exit 0
+elif [[ "$1" == "tags" ]]; then
+    shift
+    cd "$DIR/src" && ./tags.sh "$@"
+elif [[ "$1" == "targets" ]]; then
+    shift
+    cd "$DIR/src" && ./targets.sh "$@"
+elif [[ "$1" == "rollouts" ]]; then
+    shift
+    cd "$DIR/src" && ./rollouts.sh "$@"
+elif [[ -n "$2" ]]; then
+    echo >&2 "Unknown command $2"
+    show_help
+    exit 1
+else
+    show_help
+    exit 0
+fi
