@@ -16,20 +16,20 @@ hawkbitctl <command> --help
 EOF
 }
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
 
 if [[ "$1" =~ -h|--help ]]; then
     show_help
     exit 0
 elif [[ "$1" == "tags" ]]; then
     shift
-    cd "$DIR/src" && ./tags.sh "$@"
+    cd "$DIR" && ./tags.sh "$@"
 elif [[ "$1" == "targets" ]]; then
     shift
-    cd "$DIR/src" && ./targets.sh "$@"
+    cd "$DIR" && ./targets.sh "$@"
 elif [[ "$1" == "rollouts" ]]; then
     shift
-    cd "$DIR/src" && ./rollouts.sh "$@"
+    cd "$DIR" && ./rollouts.sh "$@"
 elif [[ -n "$2" ]]; then
     echo >&2 "Unknown command $2"
     show_help

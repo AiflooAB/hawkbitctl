@@ -43,3 +43,9 @@ hawkbitctl <command> --help
     targets     Manage targets
     rollouts    Manage rollouts
 ```
+
+## Development
+
+For local development, set `HAWKBITCTL_SOURCEDIR="$PWD/src"`
+
+    export HAWKBITCTL_SOURCEDIR="$PWD/src"
