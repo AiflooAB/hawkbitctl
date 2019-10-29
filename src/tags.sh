@@ -14,6 +14,7 @@ Subcommands, if <command> is omitted list will be used.
     create <NAME> <DESCRIPTION>     Crete a new tag
     delete <ID>                     Delete the tag with ID <ID>
     add <ID> <TARGET>...            Add TARGETs to tag ID
+    unassign <ID> <TARGET>...       Remove TARGETs from tag ID
 EOF
 }
 
@@ -51,6 +52,13 @@ elif [[ "$1" == "add" ]] && [[ -n "$2" ]] && [[ -n "$3" ]]; then
         | ./post "/targettags/$2/assigned" | jq .
 elif [[ "$1" == "list" ]]; then
     ./get /targettags | jq .
+elif [[ "$1" == "unassign" ]]; then
+    set -u
+    target="$2"
+    shift 2
+    for controller in "$@"; do
+        ./delete "/targettags/$target/assigned/$controller"
+    done
 else
     ./get /targettags | jq .
 fi
