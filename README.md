@@ -28,6 +28,10 @@ You can also configure your credentials with the help of `~/.netrc` (see
 
     machine hawkbit.example.com login admin password hunter2
 
+Also remember to set the permissions correctly:
+
+    chmod 600 ~/.netrc
+
 ## Usage
 
 ```
