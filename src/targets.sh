@@ -19,6 +19,7 @@ Subcommands, if <command> is omitted list will be used.
     show <ID>           Show details about target ID
     attributes <ID>     Show all attributes for target ID
     delete <ID>         Delete target ID
+    actions <ID>        Show the logs for the latest action for a target
 EOF
 }
 
