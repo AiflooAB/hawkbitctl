@@ -12,6 +12,8 @@ Note that tag assignment happens with ./tags.sh
                 More information:
                 https://www.eclipse.org/hawkbit/ui/#how-to-filter
                 Example: attribute.mac_address==de:ad:*
+    --list      List available actions (only supported by actions)
+    --action    Show logs for a specific action (only supported by actions)
 
 Subcommands, if <command> is omitted list will be used.
 
@@ -33,11 +35,27 @@ elif [[ "$1" == "show" ]]; then
     fi
     ./get "/targets/$2" | jq .
 elif [[ "$1" == "actions" ]]; then
-    latest_action=$(./get "/targets/$2/actions" | jq .content[0].id)
-    if [[ "$latest_action" == "null" ]]; then
+    target="$2"
+    if [[ "$3" == "--list" ]]; then
+        (
+        printf "ID\\tCreated at\\tLast modified at\\tType\\tStatus\\n"
+        ./get "/targets/$target/actions" | \
+            jq --raw-output \
+            '.content | map([.id, (.createdAt/1000 | todate), (.lastModifiedAt/1000 | todate), .type, .status])[] | @tsv' | \
+            column -s ' ' -t
+        ) | column -s '	' -t
         exit 0
     fi
-    ./get "/targets/$2/actions/$latest_action/status" | \
+
+    if [[ "$3" == "--action" ]]; then
+        action="$4";
+    else
+        action=$(./get "/targets/$target/actions" | jq .content[0].id)
+        if [[ "$action" == "null" ]]; then
+            exit 0
+        fi
+    fi
+    ./get "/targets/$target/actions/$action/status" | \
         jq --raw-output '.content | map([ .type, (.reportedAt/1000 | todate), (.messages | join(" | "))])[] | @tsv' | \
         column -s '	' -t
 elif [[ "$1" == "attributes" ]]; then

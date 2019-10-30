@@ -7,6 +7,8 @@ _hawkbit_completion() {
     elif [ "${COMP_WORDS[1]}" == "targets" ]; then
         if [ "${COMP_WORDS[2]}" == "list" ]; then
             COMPREPLY=($(compgen -W "--filter" -- "${COMP_WORDS[3]}"))
+        elif [ "${COMP_WORDS[2]}" == "actions" ]; then
+            COMPREPLY=($(compgen -W "--list --action" -- "${COMP_WORDS[3]}"))
         else
             COMPREPLY=($(compgen -W "-h --help list show actions attributes delete" -- "${COMP_WORDS[2]}"))
         fi
