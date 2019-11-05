@@ -12,7 +12,7 @@ Subcommands, if <command> is omitted list will be used.
 
     list                                            List all rollouts
     show <ROLLOUT>                                  Show details about a specific rollout
-    delete <ROLLOUT>                                Delete a rollout
+    delete <ROLLOUT>...                             Delete one or more rollouts
     deploygroups <ROLLOUT>                          List all deploygroups for a rollout
     deploygroup-targets <ROLLOUT> <DEPLOYGROUP>...  Show all targets for a deploygroup
 EOF
@@ -77,7 +77,10 @@ elif [[ "$1" == "delete" ]]; then
         exit 1
     fi
 
-    ./delete "/rollouts/$2" | jq .
+    shift 1
+    for rollout in "$@"; do
+        ./delete "/rollouts/$rollout" | jq .
+    done
 elif [[ "$1" == "list" ]]; then
     list_rollouts
 else
