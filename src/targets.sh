@@ -76,7 +76,11 @@ elif [[ "$1" == "list" ]]; then
     if [[ "$2" == "--filter" ]]; then
         query="?q=$3"
     fi
-    ./get "/targets${query:-}" | jq .
+    (
+        printf "ID\\tName\\tController ID\\tLast poll\\tStatus\\tDescription\\n---\\t---\\t---\\t---\\t---\\t---\\n" &&
+        ./get "/targets${query:-}" | \
+        jq --raw-output '.content | map([ .name, .controllerId, (if .lastControllerRequestAt then (.lastControllerRequestAt / 1000 | todate) else "-" end), .updateStatus, .description])[] | @tsv'
+    ) | column -s '	' -t
 else
-    ./get /targets | jq .
+    ./"$0" list
 fi
