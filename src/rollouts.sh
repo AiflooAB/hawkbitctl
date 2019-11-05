@@ -18,6 +18,14 @@ Subcommands, if <command> is omitted list will be used.
 EOF
 }
 
+list_rollouts() {
+    (
+    printf "ID\\tName\\tCreated at\\tLast modified\\tStatus\\t# Targets\\tDescription\\n---\\t---\\t---\\t---\\t---\\t---\\t---\\n" &&
+        ./get /rollouts | \
+        jq --raw-output '.content | map([ .id, .name, (.createdAt / 1000 | todate), (.lastModifiedAt / 1000 | todate), .status , .totalTargets, .description ])[] | @tsv'
+    ) | column -s '	' -t
+}
+
 if [[ "$1" =~ -h|--help ]]; then
     show_help
     exit 0
@@ -71,7 +79,7 @@ elif [[ "$1" == "delete" ]]; then
 
     ./delete "/rollouts/$2" | jq .
 elif [[ "$1" == "list" ]]; then
-    ./get /rollouts | jq .
+    list_rollouts
 else
-    ./get /rollouts | jq .
+    list_rollouts
 fi
