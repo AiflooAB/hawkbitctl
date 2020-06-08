@@ -14,4 +14,6 @@ curl -s "${CURL_AUTH_ARGS[@]}" \
     "$API_URL""$1" \
     -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
+    --output "$2" \
+    --write-out "%{http_code}" \
     -d "$data"

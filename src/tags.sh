@@ -26,11 +26,21 @@ if [[ "$1" =~ -h|--help ]]; then
 elif [[ "$1" == "create" ]]; then
     set -u
 
-    jq --null-input \
+    trap 'rm -f $tmpfile' EXIT
+    tmpfile=$(mktemp tmp.hawkbitctl.XXXXXXX)
+    http_status=$(jq --null-input \
         --arg name "$2" \
         --arg description "$3" \
         '[{ "name": $name, "description": $description }]' \
         | "$DIR/post" /targettags "$tmpfile")
+
+    if (( http_status >= 200 && http_status < 300 )); then
+        jq . < "$tmpfile"
+    else
+        echo >&2 "Failed to create tag:"
+        jq --raw-output >&2 .message < "$tmpfile"
+        exit 1
+    fi
 elif [[ "$1" == "delete" ]]; then
     set -u
 
@@ -50,9 +60,18 @@ elif [[ "$1" == "add" ]] && [[ -n "$2" ]] && [[ -n "$3" ]]; then
     items=$(printf ',"%s"' "${ids[@]}")
     quoted="[${items:1}]"
 
-    echo "$quoted" | jq 'map({ controllerId: . })' \
-        | "$DIR/post" "/targettags/$2/assigned" | jq .
+    trap 'rm -f $tmpfile' EXIT
+    tmpfile=$(mktemp tmp.hawkbitctl.XXXXXXX)
+    http_status=$(echo "$quoted" | jq 'map({ controllerId: . })' \
+        | "$DIR/post" "/targettags/$2/assigned" "$tmpfile")
 
+    if (( http_status >= 200 && http_status < 300 )); then
+        jq . < "$tmpfile"
+    else
+        echo >&2 "Failed to add targets to tag $2:"
+        jq --raw-output >&2 .message < "$tmpfile"
+        exit 1
+    fi
 elif [[ "$1" == "list" ]]; then
     "$DIR/get" /targettags | jq .
 elif [[ "$1" == "unassign" ]]; then
