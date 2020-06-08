@@ -10,9 +10,11 @@ A simple CLI for managing hawkbit
 Subcommands, for more information for any subcommand use:
 hawkbitctl <command> --help
 
-    tags        Manage target tags
-    targets     Manage targets
-    rollouts    Manage rollouts
+    tags                Manage target tags
+    targets             Manage targets
+    rollouts            Manage rollouts
+    softwaremodules     Manage software modules
+    distributionsets    Manage distribution sets
 EOF
 }
 
@@ -30,6 +32,12 @@ elif [[ "$1" == "targets" ]]; then
 elif [[ "$1" == "rollouts" ]]; then
     shift
     "$DIR/rollouts.sh" "$@"
+elif [[ "$1" == "softwaremodules" ]]; then
+    shift
+    "$DIR/softwaremodules.sh" "$@"
+elif [[ "$1" == "distributionsets" ]]; then
+    shift
+    "$DIR/distributionsets.sh" "$@"
 elif [[ -n "$2" ]]; then
     echo >&2 "Unknown command $2"
     show_help

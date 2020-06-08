@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
+
+# shellcheck disable=SC1091
+# shellcheck source=src/config.sh
+. "$DIR/config.sh"
+
+curl -s "${CURL_AUTH_ARGS[@]}" \
+    "$API_URL""$1" \
+    --header 'Content-Type: multipart/form-data' \
+    --output "$4" \
+    --write-out "%{http_code}" \
+    --form "file=@$2" \
+    --form "sha1sum=$3"

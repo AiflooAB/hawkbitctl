@@ -18,6 +18,8 @@ $(PACKAGE_DIR): \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/rollouts.sh \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/tags.sh \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/targets.sh \
+	$(PACKAGE_DIR)/usr/lib/$(NAME)/softwaremodules.sh \
+	$(PACKAGE_DIR)/usr/lib/$(NAME)/distributionsets.sh \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/hawkbitctl \
 	$(PACKAGE_DIR)/etc/bash_completion.d/$(NAME) \
 	$(PACKAGE_DIR)/usr/bin/$(NAME) \

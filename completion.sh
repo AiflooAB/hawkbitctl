@@ -24,8 +24,25 @@ _hawkbit_completion() {
         else
             COMPREPLY=()
         fi
+    elif [ "${COMP_WORDS[1]}" == "softwaremodules" ]; then
+        if [ "${#COMP_WORDS[@]}" -eq 3 ]; then
+            COMPREPLY=($(compgen -W "-h --help list show delete create upload" -- "${COMP_WORDS[2]}"))
+        elif [ "${COMP_WORDS[2]}" == "upload" ]; then
+            if [ "${#COMP_WORDS[@]}" -eq 5 ]; then
+                compopt -o default
+                COMPREPLY=()
+            else
+                COMPREPLY=()
+            fi
+        fi
+    elif [ "${COMP_WORDS[1]}" == "distributionsets" ]; then
+        if [ "${#COMP_WORDS[@]}" -eq 3 ]; then
+            COMPREPLY=($(compgen -W "-h --help list show delete create" -- "${COMP_WORDS[2]}"))
+        else
+            COMPREPLY=()
+        fi
     elif [[ "${#COMP_WORDS[@]}" -le 3 ]]; then
-        COMPREPLY=($(compgen -W "-h --help tags targets rollouts" -- "${COMP_WORDS[1]}"))
+        COMPREPLY=($(compgen -W "-h --help tags targets rollouts softwaremodules distributionsets" -- "${COMP_WORDS[1]}"))
     fi
 }
 
