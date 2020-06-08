@@ -2,7 +2,8 @@
 .SUFFIXES:
 
 NAME=hawkbitctl
-VERSION=$(shell git describe --always --match v[0-9]* HEAD | cut -c2-)
+VERSION=$(shell git describe --always --match v[0-9]* HEAD)
+VERSION_NUMBER=$(shell echo $(VERSION) | cut -c2-  )
 OUT_DIR=build
 PACKAGE_DIR=$(OUT_DIR)/$(NAME)-$(VERSION)
 
@@ -36,7 +37,7 @@ $(PACKAGE_DIR)/DEBIAN: \
 	@touch "$@"
 
 $(PACKAGE_DIR)/DEBIAN/control: debian/control
-	(cat debian/control && echo -n 'Version: ' && echo "${VERSION}") > "$@"
+	(cat debian/control && echo -n 'Version: ' && echo "${VERSION_NUMBER}") > "$@"
 
 $(PACKAGE_DIR)/DEBIAN/%: debian/%
 	@mkdir -p "$(dir $@)"
