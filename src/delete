@@ -1,6 +1,9 @@
 #!/bin/bash
 
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
+
 # shellcheck disable=SC1091
-. config.sh
+# shellcheck source=src/config.sh
+. "$DIR/config.sh"
 
 curl -s "${CURL_AUTH_ARGS[@]}"  "$API_URL""$1" -X DELETE

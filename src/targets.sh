@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
+
 show_help() {
 cat << EOF
 Usage: hawkbitctl targets [<command>]
@@ -25,6 +27,17 @@ Subcommands, if <command> is omitted list will be used.
 EOF
 }
 
+list_targets() {
+    if [[ "$1" == "--filter" ]]; then
+        query="?q=$2"
+    fi
+    (
+        printf "ID\\tName\\tController ID\\tLast poll\\tStatus\\tDescription\\n---\\t---\\t---\\t---\\t---\\t---\\n" &&
+        "$DIR/get" "/targets${query:-}" | \
+        jq --raw-output '.content | map([ .name, .controllerId, (if .lastControllerRequestAt then (.lastControllerRequestAt / 1000 | todate) else "-" end), .updateStatus, .description])[] | @tsv'
+    ) | column -s '	' -t
+}
+
 if [[ "$1" =~ -h|--help ]]; then
     show_help
     exit 0
@@ -33,13 +46,13 @@ elif [[ "$1" == "show" ]]; then
         echo >&2 "<ID> missing for show"
         exit 1
     fi
-    ./get "/targets/$2" | jq .
+    "$DIR/get" "/targets/$2" | jq .
 elif [[ "$1" == "actions" ]]; then
     target="$2"
     if [[ "$3" == "--list" ]]; then
         (
         printf "ID\\tCreated at\\tLast modified at\\tType\\tStatus\\n"
-        ./get "/targets/$target/actions" | \
+        "$DIR/get" "/targets/$target/actions" | \
             jq --raw-output \
             '.content | map([.id, (.createdAt/1000 | todate), (.lastModifiedAt/1000 | todate), .type, .status])[] | @tsv' | \
             column -s ' ' -t
@@ -50,12 +63,12 @@ elif [[ "$1" == "actions" ]]; then
     if [[ "$3" == "--action" ]]; then
         action="$4";
     else
-        action=$(./get "/targets/$target/actions" | jq .content[0].id)
+        action=$("$DIR/get" "/targets/$target/actions" | jq .content[0].id)
         if [[ "$action" == "null" ]]; then
             exit 0
         fi
     fi
-    ./get "/targets/$target/actions/$action/status" | \
+    "$DIR/get" "/targets/$target/actions/$action/status" | \
         jq --raw-output '.content | map([ .type, (.reportedAt/1000 | todate), (.messages | join(" | "))])[] | @tsv' | \
         column -s '	' -t
 elif [[ "$1" == "attributes" ]]; then
@@ -63,7 +76,7 @@ elif [[ "$1" == "attributes" ]]; then
         echo >&2 "<ID> missing for attributes"
         exit 1
     fi
-    ./get "/targets/$2/attributes" | \
+    "$DIR/get" "/targets/$2/attributes" | \
         jq --raw-output '. | to_entries[] | [ .key, .value ] | @tsv' | \
         column -s '	' -t
 elif [[ "$1" == "delete" ]]; then
@@ -71,16 +84,10 @@ elif [[ "$1" == "delete" ]]; then
         echo >&2 "<ID> missing for attributes"
         exit 1
     fi
-    ./delete "/targets/$2"
+    "$DIR/delete" "/targets/$2"
 elif [[ "$1" == "list" ]]; then
-    if [[ "$2" == "--filter" ]]; then
-        query="?q=$3"
-    fi
-    (
-        printf "ID\\tName\\tController ID\\tLast poll\\tStatus\\tDescription\\n---\\t---\\t---\\t---\\t---\\t---\\n" &&
-        ./get "/targets${query:-}" | \
-        jq --raw-output '.content | map([ .name, .controllerId, (if .lastControllerRequestAt then (.lastControllerRequestAt / 1000 | todate) else "-" end), .updateStatus, .description])[] | @tsv'
-    ) | column -s '	' -t
+    shift
+    list_targets "$@"
 else
-    ./"$0" list
+    list_targets "$@"
 fi

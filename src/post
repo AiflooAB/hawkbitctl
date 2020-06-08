@@ -1,7 +1,10 @@
 #!/bin/bash
 
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
+
 # shellcheck disable=SC1091
-. config.sh
+# shellcheck source=src/config.sh
+. "$DIR/config.sh"
 
 set -u
 

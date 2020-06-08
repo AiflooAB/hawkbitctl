@@ -23,13 +23,13 @@ if [[ "$1" =~ -h|--help ]]; then
     exit 0
 elif [[ "$1" == "tags" ]]; then
     shift
-    cd "$DIR" && ./tags.sh "$@"
+    "$DIR/tags.sh" "$@"
 elif [[ "$1" == "targets" ]]; then
     shift
-    cd "$DIR" && ./targets.sh "$@"
+    "$DIR/targets.sh" "$@"
 elif [[ "$1" == "rollouts" ]]; then
     shift
-    cd "$DIR" && ./rollouts.sh "$@"
+    "$DIR/rollouts.sh" "$@"
 elif [[ -n "$2" ]]; then
     echo >&2 "Unknown command $2"
     show_help

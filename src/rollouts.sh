@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
+
 show_help() {
 cat << EOF
 Usage: hawkbitctl rollouts [<command>] [OPTION]...
@@ -21,7 +23,7 @@ EOF
 list_rollouts() {
     (
     printf "ID\\tName\\tCreated at\\tLast modified\\tStatus\\t# Targets\\tDescription\\n---\\t---\\t---\\t---\\t---\\t---\\t---\\n" &&
-        ./get /rollouts | \
+        "$DIR/get" /rollouts | \
         jq --raw-output '.content | map([ .id, .name, (.createdAt / 1000 | todate), (.lastModifiedAt / 1000 | todate), .status , .totalTargets, .description ])[] | @tsv'
     ) | column -s '	' -t
 }
@@ -35,7 +37,7 @@ elif [[ "$1" == "show" ]]; then
         exit 1
     fi
 
-    ./get "/rollouts/$2" | jq .
+    "$DIR/get" "/rollouts/$2" | jq .
 elif [[ "$1" == "deploygroups" ]]; then
     if [[ -z $2 ]]; then
         echo >&2 "<ID> missing for rollouts deploygroups"
@@ -44,7 +46,7 @@ elif [[ "$1" == "deploygroups" ]]; then
 
     (
         printf "Name\\tID\\tStatus\\tTargets\\n---\\t---\\t---\\t---\\n" && 
-        ./get "/rollouts/$2/deploygroups" | \
+        "$DIR/get" "/rollouts/$2/deploygroups" | \
         jq --raw-output '.content | map([ .name, .id, .status, .totalTargets ])[] | @tsv'
     )| column -s '	' -t
 elif [[ "$1" == "deploygroup-targets" ]]; then
@@ -54,12 +56,12 @@ elif [[ "$1" == "deploygroup-targets" ]]; then
     fi
 
     get_group() {
-        ./get "/rollouts/$1/deploygroups/$2/targets" | \
+        "$DIR/get" "/rollouts/$1/deploygroups/$2/targets" | \
         jq --raw-output '.content | map([ .name, .updateStatus ])[] | @tsv'
     }
 
     if [[ "$3" =~ -a|--all ]]; then
-        groups=$(./get "/rollouts/$2/deploygroups" | jq --raw-output .content[].id)
+        groups=$("$DIR/get" "/rollouts/$2/deploygroups" | jq --raw-output .content[].id)
     else
         groups="${*:3}"
     fi

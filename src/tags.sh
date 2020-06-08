@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="${HAWKBITCTL_SOURCEDIR:-/usr/lib/hawkbitctl}"
+
 show_help() {
 cat << EOF
 Usage: hawkbitctl tags [<command>]
@@ -28,15 +30,15 @@ elif [[ "$1" == "create" ]]; then
         --arg name "$2" \
         --arg description "$3" \
         '[{ "name": $name, "description": $description }]' \
-        | ./post /targettags | jq .
+        | "$DIR/post" /targettags "$tmpfile")
 elif [[ "$1" == "delete" ]]; then
     set -u
 
-    ./delete "/targettags/$2"
+    "$DIR/delete" "/targettags/$2"
 elif [[ "$1" == "assigned" ]] && [[ -n "$2" ]]; then
     set -u
 
-    ./get "/targettags/$2/assigned" 0
+    "$DIR/get" "/targettags/$2/assigned" 0
 elif [[ "$1" == "add" ]] && [[ -n "$2" ]] && [[ -n "$3" ]]; then
     ids=("${@:3}")
 
@@ -49,9 +51,10 @@ elif [[ "$1" == "add" ]] && [[ -n "$2" ]] && [[ -n "$3" ]]; then
     quoted="[${items:1}]"
 
     echo "$quoted" | jq 'map({ controllerId: . })' \
-        | ./post "/targettags/$2/assigned" | jq .
+        | "$DIR/post" "/targettags/$2/assigned" | jq .
+
 elif [[ "$1" == "list" ]]; then
-    ./get /targettags | jq .
+    "$DIR/get" /targettags | jq .
 elif [[ "$1" == "unassign" ]]; then
     set -u
     target="$2"
@@ -60,5 +63,5 @@ elif [[ "$1" == "unassign" ]]; then
         ./delete "/targettags/$target/assigned/$controller"
     done
 else
-    ./get /targettags | jq .
+    "$DIR/get" /targettags | jq .
 fi
