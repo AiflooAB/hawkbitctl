@@ -16,6 +16,7 @@ $(PACKAGE_DIR): \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/delete \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/get \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/post \
+	$(PACKAGE_DIR)/usr/lib/$(NAME)/upload \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/rollouts.sh \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/tags.sh \
 	$(PACKAGE_DIR)/usr/lib/$(NAME)/targets.sh \
