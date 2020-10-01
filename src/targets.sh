@@ -19,11 +19,12 @@ Note that tag assignment happens with ./tags.sh
 
 Subcommands, if <command> is omitted list will be used.
 
-    list                List all tags
-    show <ID>           Show details about target ID
-    attributes <ID>     Show all attributes for target ID
-    delete <ID>         Delete target ID
-    actions <ID>        Show the logs for the latest action for a target
+    list                    List all tags
+    show <ID>               Show details about target ID
+    attributes <ID>         Show all attributes for target ID
+    delete <ID>             Delete target ID
+    actions <ID>            Show the logs for the latest action for a target
+    assignDS <TARGET> <DS>  Assign the distribution set with id DS to target with id TARGET
 EOF
 }
 
@@ -79,6 +80,24 @@ elif [[ "$1" == "attributes" ]]; then
     "$DIR/get" "/targets/$2/attributes" | \
         jq --raw-output '. | to_entries[] | [ .key, .value ] | @tsv' | \
         column -s '	' -t
+elif [[ "$1" == "assignDS" ]]; then
+    if [[ -z $2 ]] || [[ -z $3 ]]; then
+        echo >&2 "Assigne distribution requires <TARGET> <DS>"
+        exit 1
+    fi
+    trap 'rm -f $tmpfile' EXIT
+    tmpfile=$(mktemp tmp.hawkbitctl.XXXXXXX)
+    http_status=$(jq --null-input \
+        --arg id "$3" \
+        '[{ "id": $id }]' \
+        | "$DIR/post" "/targets/$2/assignedDS" "$tmpfile")
+    if (( http_status >= 200 && http_status < 300 )); then
+        jq . < "$tmpfile"
+    else
+        echo >&2 "Failed to create software module:"
+        jq --raw-output >&2 .message < "$tmpfile"
+        exit 1
+    fi
 elif [[ "$1" == "delete" ]]; then
     if [[ -z $2 ]]; then
         echo >&2 "<ID> missing for attributes"
