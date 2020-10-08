@@ -33,7 +33,7 @@ list_targets() {
         query="?q=$2"
     fi
     (
-        printf "ID\\tName\\tController ID\\tLast poll\\tStatus\\tDescription\\n---\\t---\\t---\\t---\\t---\\t---\\n" &&
+        printf "Name\\tController ID\\tLast poll\\tStatus\\tDescription\\n---\\t---\\t---\\t---\\t---\\n" &&
         "$DIR/get" "/targets${query:-}" | \
         jq --raw-output '.content | map([ .name, .controllerId, (if .lastControllerRequestAt then (.lastControllerRequestAt / 1000 | todate) else "-" end), .updateStatus, .description])[] | @tsv'
     ) | column -s '	' -t
