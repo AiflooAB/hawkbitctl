@@ -20,6 +20,7 @@ Note that tag assignment happens with ./tags.sh
 Subcommands, if <command> is omitted list will be used.
 
     list                    List all tags
+    create <ID> <NAME>      Create new target with ID and name NAME
     show <ID>               Show details about target ID
     attributes <ID>         Show all attributes for target ID
     delete <ID>             Delete target ID
@@ -42,6 +43,25 @@ list_targets() {
 if [[ "$1" =~ -h|--help ]]; then
     show_help
     exit 0
+elif [[ "$1" == create ]]; then
+    if [[ -z $2 ]] || [[ -z $3 ]]; then
+        echo >&2 "Create target requires <ID> <CTRL>"
+        exit 1
+    fi
+    trap 'rm -f $tmpfile' EXIT
+    tmpfile=$(mktemp tmp.hawkbitctl.XXXXXXX)
+    http_status=$(jq --null-input \
+        --arg name "$2" \
+        --arg controllerId "$3" \
+        '[{ "name": $name, "controllerId": $controllerId }]' \
+        | "$DIR/post" "/targets" "$tmpfile")
+    if (( http_status >= 200 && http_status < 300 )); then
+        jq . < "$tmpfile"
+    else
+        echo >&2 "Failed to create target:"
+        jq --raw-output >&2 .message < "$tmpfile"
+        exit 1
+    fi
 elif [[ "$1" == "show" ]]; then
     if [[ -z $2 ]]; then
         echo >&2 "<ID> missing for show"
